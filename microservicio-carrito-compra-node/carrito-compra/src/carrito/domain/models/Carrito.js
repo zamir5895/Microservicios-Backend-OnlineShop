@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const CarritoSchema = new mongoose.Schema({
-    id: { type: mongoose.Schema.Types.ObjectId, auto: true },
+    _id: { type: mongoose.Schema.Types.ObjectId, auto: true },
     usuario_id: { type: String, required: true },
     carritoDetalle_id: { type: mongoose.Schema.Types.ObjectId, ref: 'DetalleCarrito', required: false },
     estado : { type: String, required: true, default: 'pendiente' },

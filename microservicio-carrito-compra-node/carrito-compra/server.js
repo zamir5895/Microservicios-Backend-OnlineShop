@@ -3,7 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose'); // Agregar mongoose
 const app = express();
 const CarritoController = require('./src/carrito/controllers/CarritoController');
-
+const DetalleCarritoController = require('./src/detalleCarrito/controllers/DetalleCarritoController');
 app.use(express.json()); // express.json() ya maneja el body parsing
 
 // Definir rutas de carrito
@@ -22,7 +22,8 @@ app.get('/api/detalleCarrito/all', DetalleCarritoController.obtenerTodosLosDetal
 app.get('/api/detalleCarrito/:id', DetalleCarritoController.obtenerDetalleCarritoPorId);
 app.delete('/api/detalleCarrito/:id', DetalleCarritoController.eliminarDetalleCarrito);
 app.delete('/api/detalleCarrito/:id/:productoid', DetalleCarritoController.eliminarProducto);
-app.put('/api/detalleCarrito/:id', DetalleCarritoController.editarDetalleCarrito);
+app.put('/api/detalleCarrito/:id/:productoid', DetalleCarritoController.editarCantidadProducto);
+app.get('/api/detalleCarrito/:id/:productoid', DetalleCarritoController.obtenerProductoByDetalleCarritoIdAndProductoId);
 
 // Conexión a MongoDB sin opciones deprecadas
 mongoose.connect(process.env.MONGO_URI)

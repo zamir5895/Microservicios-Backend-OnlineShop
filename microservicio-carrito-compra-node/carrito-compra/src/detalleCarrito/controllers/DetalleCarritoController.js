@@ -1,10 +1,10 @@
-const CarritoService = require('../services/CarritoService');
+const DetalleCarritoService = require('../domain/services/DetalleCarritoService');
 const mongoose = require('mongoose');
 
 class DetalleCarritoController{
     async crearDetalleCarrito(req, res){
         try{
-            const detalleCarrito = await CarritoService.crearDetalleCarrito(req.body);
+            const detalleCarrito = await DetalleCarritoService.crearDetalleCarrito(req.body);
             res.status(201).json(detalleCarrito);
         }
         catch(err){
@@ -16,15 +16,15 @@ class DetalleCarritoController{
         try{
             const {id} = req.params;
             const producto = req.body;
-            const detalleCarrito = await CarritoService.agregarProducto(id, producto);
+            const detalleCarrito = await DetalleCarritoService.agregarProducto(id, producto);
             res.status(200).json(detalleCarrito);
-        }catch{
-            res.status(400).json({message: error.message});
+        }catch(err){
+            res.status(400).json({message: err.message});
         }
     }
     async obtenerTodosLosDetallesCarrito(req,res){
         try{
-            const detallesCarrito = await CarritoService.obtenerTodosLosDetallesCarrito();
+            const detallesCarrito = await DetalleCarritoService.obtenerTodosLosDetallesCarrito();
             res.status(200).json(detallesCarrito);
         }catch(error){
             res.status(400).json({message: error.message});
@@ -33,7 +33,7 @@ class DetalleCarritoController{
     async obtenerDetalleCarritoPorId(req,res){
         try{
             const {id} = req.params;
-            const detalleCarrito = await CarritoService.obtenerDetalleCarritoPorId(id);
+            const detalleCarrito = await DetalleCarritoService.obtenerDetalleCarritoPorId(id);
             res.status(200).json(detalleCarrito);
         }catch(error){
             res.status(400).json({message: error.message});
@@ -44,7 +44,7 @@ class DetalleCarritoController{
         try{
             const {id} = req.params;
             const {productoid} = req.params;
-            const detalleCarrito = await CarritoService.eliminarProducto(id, productoid);
+            const detalleCarrito = await DetalleCarritoService.eliminarProducto(id, productoid);
             res.status(200).json(detalleCarrito);
         }catch(error){
             res.status(400).json({message: error.message});
@@ -53,7 +53,7 @@ class DetalleCarritoController{
     async eliminarDetalleCarrito(req,res){
         try{
             const {id} = req.params;
-            await CarritoService.eliminarDetalleCarrito(id);
+            await DetalleCarritoService.eliminarDetalleCarrito(id);
             res.status(204).end();
         }catch(error){
             res.status(400).json({message: error.message});
@@ -65,7 +65,17 @@ class DetalleCarritoController{
             const {id} = req.params;
             const {productoid} = req.params;
             const {cantidad} = req.body;
-            const detalleCarrito = await CarritoService.editarCantidadProducto(id, productoid, cantidad);
+            const detalleCarrito = await DetalleCarritoService.editarCantidadProducto(id, productoid, cantidad);
+            res.status(200).json(detalleCarrito);
+        }catch(error){
+            res.status(400).json({message: error.message});
+        }
+    }
+    async obtenerProductoByDetalleCarritoIdAndProductoId(req,res){
+        try{
+            const {id} = req.params;
+            const {productoid} = req.params;
+            const detalleCarrito = await DetalleCarritoService.obtenerProductoByDetalleCarritoIdAndProductoId(id, productoid);
             res.status(200).json(detalleCarrito);
         }catch(error){
             res.status(400).json({message: error.message});

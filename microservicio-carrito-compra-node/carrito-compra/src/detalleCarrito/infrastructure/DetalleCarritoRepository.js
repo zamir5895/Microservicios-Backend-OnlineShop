@@ -1,7 +1,7 @@
-const DetalleCarrito = require('./models/DetalleCarrito');
+const DetalleCarrito = require('../domain/models/DetalleCarrito');
 
 class DetalleCarritoRepository{
-    async createDetalleCarrito(detalleCarritoData){
+    async crearDetalleCarrito(detalleCarritoData){
         const detalleCarrito = new DetalleCarrito(detalleCarritoData);
         detalleCarrito.calcularTotal();
         return await detalleCarrito.save();

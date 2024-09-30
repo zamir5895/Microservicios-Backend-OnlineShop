@@ -17,8 +17,8 @@ class CarritoController{
         try{
             const carritos = await CarritoService.obtenerTodosLosCarritos();
             res.status(200).json(carritos);
-        }catch(error){
-            res.status(400).json({message: error.message});
+        }catch(err){
+            res.status(400).json({message: err.message});
         }
     }
     //Obtenemos un carrito por id
@@ -27,8 +27,8 @@ class CarritoController{
             const {id} = req.params;
             const carrito = await CarritoService.obtenerCarritoPorId(id);
             res.status(200).json(carrito);
-        }catch(error){
-            res.status(400).json({message: error.message});
+        }catch(err){
+            res.status(400).json({message: err.message});
         }
     }
     //Obtener carritos por usuario
@@ -37,8 +37,8 @@ class CarritoController{
             const {usuarioId} = req.params;
             const carritos = await CarritoService.obtenerCarritosPorUsuario(usuarioId);
             res.status(200).json(carritos);
-        }catch(error){
-            res.status(400).json({message: error.message});
+        }catch(err){
+            res.status(400).json({message: err.message});
         }
     }
     //Modificar carrito a pagado
@@ -47,8 +47,8 @@ class CarritoController{
             const {id} = req.params;
             const carrito = await CarritoService.modificarCarritoPagado(id);
             res.status(200).json(carrito);
-        }catch(error){
-            res.status(400).json({message: error.message});
+        }catch(err){
+            res.status(400).json({message: err.message});
         }
     }
     //Eliminar carrito
@@ -57,8 +57,8 @@ class CarritoController{
             const {id} = req.params;
             await CarritoService.eliminarCarrito(id);
             res.status(204).end();
-        }catch(error){
-            res.status(400).json({message: error.message});
+        }catch(err){
+            res.status(400).json({message: err.message});
         }
     }
     //Editar el Id de DetalleCarrito
@@ -74,8 +74,8 @@ class CarritoController{
     
             const carrito = await CarritoService.editarDetalleCarrito(id, detallesCarritoId);
             res.status(200).json(carrito);
-        } catch (error) {
-            res.status(400).json({ message: error.message });
+        } catch (err) {
+            res.status(400).json({ message: err.message });
         }
     }
     
