@@ -14,6 +14,7 @@ app.get('/api/carrito/usuario/:usuarioId', CarritoController.obtenerCarritosPorU
 app.put('/api/carrito/pagado/:id', CarritoController.modificarCarritoPagado);
 app.delete('/api/carrito/:id', CarritoController.eliminarCarrito);
 app.put('/api/carrito/detalles/:id', CarritoController.editarDetalleCarrito);
+const { swaggerUi, swaggerDocs } = require('./swagger'); // Importamos el archivo de configuración de Swagger
 
 //Definir rutas de detalle carrito
 app.post('/api/detalleCarrito/postear', DetalleCarritoController.crearDetalleCarrito);
@@ -24,6 +25,10 @@ app.delete('/api/detalleCarrito/:id', DetalleCarritoController.eliminarDetalleCa
 app.delete('/api/detalleCarrito/:id/:productoid', DetalleCarritoController.eliminarProducto);
 app.put('/api/detalleCarrito/:id/:productoid', DetalleCarritoController.editarCantidadProducto);
 app.get('/api/detalleCarrito/:id/:productoid', DetalleCarritoController.obtenerProductoByDetalleCarritoIdAndProductoId);
+
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+
 
 // Conexión a MongoDB sin opciones deprecadas
 mongoose.connect(process.env.MONGO_URI)
