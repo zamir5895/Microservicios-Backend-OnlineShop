@@ -24,4 +24,6 @@ public class Producto {
     @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL)
     private List<Reseña> reseñas;
 
+
+
 }
