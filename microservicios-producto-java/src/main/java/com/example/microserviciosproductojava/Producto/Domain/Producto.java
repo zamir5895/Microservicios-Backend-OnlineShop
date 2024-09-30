@@ -12,11 +12,12 @@ import java.util.List;
 public class Producto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
     private String nombre;
     private Double precio;
     private Integer stock;
     private String descripcion;
+    private Integer cantidadReseñas;
     @ManyToOne
     @JoinColumn(name = "categoria_id")
     private Categoria categoria;

@@ -9,10 +9,9 @@ import lombok.Data;
 public class Reseña {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    private int idProducto;
+    private Integer id;
     private String comentario;
-    private int calificacion;
+    private Integer calificacion;
     private int usuarioId;
     @ManyToOne
     @JoinColumn(name = "producto_id")
