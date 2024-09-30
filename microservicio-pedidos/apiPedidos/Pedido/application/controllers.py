@@ -6,14 +6,27 @@ from apiPedidos.Pedido.serializers import PedidoSerializer, EditPedidoSerializer
 from apiPedidos.Pedido.dtos.Pedido_dto import Pedidodto
 from apiPedidos.Pedido.exceptions.Pedido_exceptions import PedidoNotFound, InvalidPedidoException, UsuarioNotFoundPedido, DireccionNotFoundPedido
 from apiPedidos.Pedido.dtos.updatePedidodto import UpdatePedidodto
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+
 
 class PedidoGuardar(APIView):
+    """
+    Guardar un nuevo pedido
+    """
+
+    @swagger_auto_schema(
+        operation_description="Crea un nuevo pedido",
+        request_body=PedidoSerializer,
+        responses={
+            201: 'Pedido creado correctamente',
+            400: 'Error en la solicitud'
+        }
+    )
     def post(self, request):
         serializer = PedidoSerializer(data=request.data)
-        print(request.data)
         if serializer.is_valid():
             try:
-                print("Datos validos", serializer.data)
                 pedido = PedidoService.createPedido(
                     pedido_data=serializer.data
                 )
@@ -21,22 +34,24 @@ class PedidoGuardar(APIView):
                     'message': 'Pedido creado correctamente',
                 }, status=status.HTTP_201_CREATED)
             except Exception as e:
-                print("error en el try" )
                 return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-        else:
-            print("error en serializer")
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    def get(self, request):
-        return Response({
-            'message': 'Para registrar un pedido, usa el método POST con los siguientes campos:',
-            'fields': PedidoSerializer().data
-        }, status=status.HTTP_200_OK)
-    
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 class DetallesPedidoId(APIView):
+    """
+    Obtener detalles del pedido por ID
+    """
+
+    @swagger_auto_schema(
+        operation_description="Obtiene los detalles de un pedido por ID",
+        responses={
+            200: PedidoDtoSerializer,
+            404: 'Pedido no encontrado',
+            400: 'Error en la solicitud'
+        }
+    )
     def get(self, request, *args, **kwargs):
         pedidoId = kwargs.get('pedidoId')
-        if not pedidoId:
-            return Response({"error": "Falta el ID del pedido"}, status=status.HTTP_400_BAD_REQUEST)
         try:
             pedido = PedidoService.getPedidoById(pedidoId)
             serializer = PedidoDtoSerializer(pedido)
@@ -45,11 +60,22 @@ class DetallesPedidoId(APIView):
             return Response({"error": str(e)}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
 class PedidoByUserId(APIView):
+    """
+    Obtener pedidos por ID de usuario
+    """
+
+    @swagger_auto_schema(
+        operation_description="Obtiene todos los pedidos de un usuario",
+        responses={
+            200: PedidoDtoSerializer(many=True),
+            404: 'Pedidos no encontrados',
+            400: 'Error en la solicitud'
+        }
+    )
     def get(self, request, *args, **kwargs):
         userId = kwargs.get('userId')
-        if not userId:
-            return Response({"error": "Falta el ID del usuario"}, status=status.HTTP_400_BAD_REQUEST)
         try:
             pedidos = PedidoService.getPedidosByUserId(userId)
             serializer = PedidoDtoSerializer(pedidos, many=True)
@@ -58,15 +84,24 @@ class PedidoByUserId(APIView):
             return Response({"error": str(e)}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-        
+
 class PedidoByUserIdAndPedidoId(APIView):
+    """
+    Obtener pedido por ID de usuario y pedido
+    """
+
+    @swagger_auto_schema(
+        operation_description="Obtiene un pedido por el ID del usuario y del pedido",
+        responses={
+            200: PedidoDtoSerializer,
+            404: 'Pedido no encontrado',
+            400: 'Error en la solicitud'
+        }
+    )
     def get(self, request, *args, **kwargs):
         userId = kwargs.get('userId')
         pedidoId = kwargs.get('pedidoId')
-        if not userId or not pedidoId:
-            return Response({"error": "Falta el ID del usuario o del pedido"}, status=status.HTTP_400_BAD_REQUEST)
         try:
-
             pedido = PedidoService.getPedidoByUserIdAndPedidoId(userId, pedidoId)
             serializer = PedidoDtoSerializer(pedido)
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -74,18 +109,27 @@ class PedidoByUserIdAndPedidoId(APIView):
             return Response({"error": str(e)}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-        except UsuarioNotFoundPedido as e:
-            return Response({"error": str(e)}, status=status.HTTP_401_UNAUTHORIZED)
-        except DireccionNotFoundPedido as e:
-            return Response({"error": str(e)}, status=status.HTTP_401_UNAUTHORIZED)
-        
+
 class PedidoByUserIdAndEstado(APIView):
+    """
+    Obtener pedidos de un usuario por estado
+    """
+
+    @swagger_auto_schema(
+        operation_description="Obtiene los pedidos de un usuario filtrados por estado",
+        manual_parameters=[
+            openapi.Parameter('estado', openapi.IN_QUERY, description="Estado del pedido", type=openapi.TYPE_STRING)
+        ],
+        responses={
+            200: PedidoDtoSerializer(many=True),
+            404: 'Pedidos no encontrados',
+            400: 'Error en la solicitud'
+        }
+    )
     def get(self, request, *args, **kwargs):
         userId = kwargs.get('userId')
-        if not userId:
-            return Response({"error": "Falta el ID del usuario"}, status=status.HTTP_400_BAD_REQUEST)
+        estado = request.query_params.get('estado')
         try:
-            estado = request.query_params.get('estado')
             pedidos = PedidoService.getPeidosByUserIdAndEstado(userId, estado)
             serializer = PedidoDtoSerializer(pedidos, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -95,12 +139,26 @@ class PedidoByUserIdAndEstado(APIView):
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 class PedidoByUserIdAndFechaPedido(APIView):
+    """
+    Obtener pedidos por usuario y rango de fechas
+    """
+
+    @swagger_auto_schema(
+        operation_description="Obtiene los pedidos de un usuario en un rango de fechas",
+        manual_parameters=[
+            openapi.Parameter('fechaPedidodesde', openapi.IN_QUERY, description="Fecha de inicio", type=openapi.TYPE_STRING),
+            openapi.Parameter('fechaPedidoHasta', openapi.IN_QUERY, description="Fecha de fin", type=openapi.TYPE_STRING)
+        ],
+        responses={
+            200: PedidoDtoSerializer(many=True),
+            404: 'Pedidos no encontrados',
+            400: 'Error en la solicitud'
+        }
+    )
     def get(self, request, *args, **kwargs):
         userId = kwargs.get('userId')
         fechaPedidodesde = request.query_params.get('fechaPedidodesde')
         fechaPedidoHasta = request.query_params.get('fechaPedidoHasta')
-        if not userId or not fechaPedidodesde or not fechaPedidoHasta:
-            return Response({"error": "Falta el ID del usuario o de las fechas"}, status=status.HTTP_400_BAD_REQUEST)
         try:
             pedidos = PedidoService.getPedidoByUserIdAndFechaPedido(userId, fechaPedidodesde, fechaPedidoHasta)
             serializer = PedidoDtoSerializer(pedidos, many=True)
@@ -109,12 +167,25 @@ class PedidoByUserIdAndFechaPedido(APIView):
             return Response({"error": str(e)}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-        
+
 class PedidosByEstado(APIView):
+    """
+    Obtener pedidos por estado
+    """
+
+    @swagger_auto_schema(
+        operation_description="Obtiene pedidos filtrados por estado",
+        manual_parameters=[
+            openapi.Parameter('estado', openapi.IN_QUERY, description="Estado del pedido", type=openapi.TYPE_STRING)
+        ],
+        responses={
+            200: PedidoDtoSerializer(many=True),
+            404: 'Pedidos no encontrados',
+            400: 'Error en la solicitud'
+        }
+    )
     def get(self, request, *args, **kwargs):
         estado = request.query_params.get('estado')
-        if not estado:
-            return Response({"error": "Falta el estado del pedido"}, status=status.HTTP_400_BAD_REQUEST)
         try:
             pedidos = PedidoService.getPedidosByEstado(estado)
             serializer = PedidoDtoSerializer(pedidos, many=True)
@@ -125,11 +196,25 @@ class PedidosByEstado(APIView):
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 class PedidosByRangeFechaPedido(APIView):
+    """
+    Obtener pedidos por rango de fechas
+    """
+
+    @swagger_auto_schema(
+        operation_description="Obtiene pedidos en un rango de fechas",
+        manual_parameters=[
+            openapi.Parameter('fechaPedidodesde', openapi.IN_QUERY, description="Fecha de inicio", type=openapi.TYPE_STRING),
+            openapi.Parameter('fechaPedidoHasta', openapi.IN_QUERY, description="Fecha de fin", type=openapi.TYPE_STRING)
+        ],
+        responses={
+            200: PedidoDtoSerializer(many=True),
+            404: 'Pedidos no encontrados',
+            400: 'Error en la solicitud'
+        }
+    )
     def get(self, request, *args, **kwargs):
         fechaPedidodesde = request.query_params.get('fechaPedidodesde')
         fechaPedidoHasta = request.query_params.get('fechaPedidoHasta')
-        if not fechaPedidodesde or not fechaPedidoHasta:
-            return Response({"error": "Falta el rango de fechas"}, status=status.HTTP_400_BAD_REQUEST)
         try:
             pedidos = PedidoService.getPedidosByRangeFechaPedido(fechaPedidodesde, fechaPedidoHasta)
             serializer = PedidoDtoSerializer(pedidos, many=True)
@@ -138,12 +223,23 @@ class PedidosByRangeFechaPedido(APIView):
             return Response({"error": str(e)}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-        
+
 class PedidoEditar(APIView):
+    """
+    Editar un pedido
+    """
+
+    @swagger_auto_schema(
+        operation_description="Edita un pedido por ID",
+        request_body=EditPedidoSerializer,
+        responses={
+            200: 'Pedido actualizado correctamente',
+            400: 'Error en la solicitud',
+            404: 'Pedido no encontrado'
+        }
+    )
     def put(self, request, *args, **kwargs):
         pedidoId = kwargs.get('pedidoId')
-        if(not pedidoId):
-            return Response({"error": "pedidoId es requerido"}, status=status.HTTP_400_BAD_REQUEST)
         serializer = EditPedidoSerializer(data=request.data)
         if serializer.is_valid():
             try:
@@ -166,6 +262,17 @@ class PedidoEditar(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class PedidoDelete(APIView):
+    """
+    Eliminar un pedido
+    """
+
+    @swagger_auto_schema(
+        operation_description="Elimina un pedido por ID",
+        responses={
+            200: 'Pedido eliminado correctamente',
+            400: 'Error en la solicitud'
+        }
+    )
     def delete(self, request, *args, **kwargs):
         pedidoId = kwargs.get('pedidoId')
         try:

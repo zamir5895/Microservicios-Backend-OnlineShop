@@ -49,8 +49,6 @@ def home(request):
                     <li><a href="/api/usuario/">/api/usuario/</a> - Interactuar con la API de usuarios</li>
                     <li><a href="/api/pedido/">/api/pedido/</a> - Interactuar con la API de pedidos</li>
                     <li><a href="/api/direccion-envio/">/api/direccion-envio/</a> - Interactuar con la API de direcciones de envío</li>
-                    <li><a href="/api/detalles-pedido/">/api/detalles-pedido/</a> - Interactuar con la API de detalles de pedidos</li>
-                    <li><a href="/api/pago/">/api/pago/</a> - Interactuar con la API de pagos</li>
                 </ul>
             </div>
         </body>

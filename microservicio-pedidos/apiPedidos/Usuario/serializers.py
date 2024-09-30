@@ -4,7 +4,7 @@ from rest_framework import serializers
 from apiPedidos.Usuario.domain.models import Usuario
 
 class UsuarioSerializer(serializers.ModelSerializer):
-    idUsuario = serializers.IntegerField(default="Id del usuario")
+    idUsuario = serializers.IntegerField(read_only=True)
     nombre = serializers.CharField(default="Nombre Predeterminado")
     apellido = serializers.CharField(default="Apellido Predeterminado")
     email = serializers.EmailField(default="ejemplo@correo.com")
