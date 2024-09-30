@@ -1,9 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 
-# Crear la instancia de SQLAlchemy
 db = SQLAlchemy()
 
-# Definir la clase Administrador
 class Administrador(db.Model):
     __tablename__ = 'administradores'
 

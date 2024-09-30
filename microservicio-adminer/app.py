@@ -10,12 +10,10 @@ from flasgger import Swagger
 app = Flask(__name__)
 app.config.from_object(Config)
 
-# Inicializar la base de datos
 db.init_app(app)
 with app.app_context():
     db.create_all()
 
-# Inicializar Swagger
 swagger = Swagger(app, template=swagger_template)
 
 
@@ -30,7 +28,6 @@ def index():
     """
     return jsonify({"message": "Bienvenido al microservicio de Administrador"}), 200
 
-# Crear un nuevo administrador
 @app.route('/admin', methods=['POST'])
 def create_admin():
     """
@@ -63,7 +60,6 @@ def create_admin():
     db.session.commit()
     return jsonify({"message": "Administrador creado exitosamente"}), 201
 
-# Obtener la lista de administradores
 @app.route('/admins', methods=['GET'])
 def get_admins():
     """
@@ -118,7 +114,6 @@ def get_admin(id):
     admin = Administrador.query.get_or_404(id)
     return jsonify({"id": admin.id, "nombre": admin.nombre, "email": admin.email}), 200
 
-# Actualizar un administrador
 @app.route('/admin/<int:id>', methods=['PUT'])
 def update_admin(id):
     """
@@ -158,7 +153,6 @@ def update_admin(id):
     db.session.commit()
     return jsonify({"message": "Administrador actualizado correctamente"}), 200
 
-# Eliminar un administrador
 @app.route('/admin/<int:id>', methods=['DELETE'])
 def delete_admin(id):
     """
