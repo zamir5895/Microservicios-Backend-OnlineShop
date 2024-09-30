@@ -10,6 +10,7 @@ import java.util.List;
 @Data
 @Entity
 public class Categoria {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

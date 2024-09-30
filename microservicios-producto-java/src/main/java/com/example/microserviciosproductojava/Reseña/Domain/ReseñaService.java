@@ -5,7 +5,10 @@ import com.example.microserviciosproductojava.Producto.Domain.Producto;
 import com.example.microserviciosproductojava.Producto.Infrastructure.ProductoRepository;
 import com.example.microserviciosproductojava.Reseña.DTOS.PostReseñadto;
 import com.example.microserviciosproductojava.Reseña.DTOS.ResponseReseñadto;
+import com.example.microserviciosproductojava.Reseña.DTOS.patchdto;
+import com.example.microserviciosproductojava.Reseña.DTOS.promediodto;
 import com.example.microserviciosproductojava.Reseña.Infrastructure.ReseñaRepository;
+import jakarta.transaction.Transactional;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -26,25 +29,31 @@ public class ReseñaService {
     @Autowired
     private ProductoRepository productoRepository;
 
+
+    @Transactional
     public void crearReseña(PostReseñadto post) {
         // Buscar el producto por ID
+        System.out.println("dto  " + post);
         Producto producto = productoRepository.findById(post.getProductoId())
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
-        System.out.println("Producto encontrado: " + producto.getNombre());
+        System.out.println("Producto encontrado: " + producto.getId());
         Reseña reseña = new Reseña();
         reseña.setCalificacion(post.getCalificacion());
         reseña.setComentario(post.getComentario());
         reseña.setUsuarioId(post.getUsuarioId());
-        System.out.println("error peud");
+
         // Asignar el producto a la reseña
         reseña.setProducto(producto);
-        System.out.println("eeror");
+
+        // Verificar que el producto se está enlazando correctamente
+        System.out.println("Producto en la reseña: " + reseña.getProducto().getId());
+
         // Guardar la reseña
         reseñaRepository.save(reseña);
-        System.out.println("aqui");
+        reseñaRepository.flush();  // Forzar sincronización
+
         // Actualizar el producto con la nueva reseña
-        producto.getReseñas().add(reseña);
         if (producto.getCantidadReseñas() == null) {
             producto.setCantidadReseñas(1);
         } else {
@@ -80,30 +89,47 @@ public class ReseñaService {
         productoRepository.save(producto);
         reseñaRepository.delete(reseña);
     }
-    public Double ObtenerPromedio(Integer productoId){
-        double promedio = reseñaRepository.findAllByProductoId(productoId, PageRequest.of(0, Integer.MAX_VALUE))
+    public promediodto ObtenerPromedio(Integer productoId){
+        Double promedio = reseñaRepository.findAllByProductoId(productoId, PageRequest.of(0, Integer.MAX_VALUE))
                 .getContent()
                 .stream()
                 .mapToDouble(Reseña::getCalificacion)
                 .average()
                 .orElse(0.0);
-        return promedio;
+        promediodto promdto = new promediodto();
+        promdto.setProductoId(productoId);
+        promdto.setPromedio(promedio);
+        return promdto;
     }
+    public void ActualizarReseña(Integer productoId, Integer reseñaId, patchdto post) {
+        // Buscar la reseña por ID o lanzar una excepción si no existe
+        Reseña reseña = reseñaRepository.findById(reseñaId)
+                .orElseThrow(() -> new RuntimeException("Reseña no encontrada"));
 
-    public void ActualizarReseña(Integer productoId, Integer reseñaId, PostReseñadto post){
-        Reseña reseña = reseñaRepository.findById(reseñaId).orElseThrow(()-> new RuntimeException("Reseña no encontrada"));
-        if(reseña.getProducto().getId() != productoId){
-            throw new RuntimeException("Reseña no encontrada");
-        }if(post.getCalificacion() != null){
+        // Verificar que el usuario tiene permisos para modificar la reseña
+        System.out.println("UsuarioId: " + reseña.getUsuarioId());
+        System.out.println("ProductoId: " + reseña.getProducto().getId());
+        System.out.println("Usuariodto: " + post.getUsuariId());
+        if (reseña.getUsuarioId()!= post.getUsuariId()) {
+            throw new RuntimeException("Usuario no autorizado para actualizar esta reseña");
+        }
+
+        if (!reseña.getProducto().getId().equals(productoId)        // Verificar que el usuario tiene permisos para modificar la reseña
+) {
+            throw new RuntimeException("Reseña no encontrada para este producto");
+        }
+
+        if (post.getCalificacion() != null) {
             reseña.setCalificacion(post.getCalificacion());
         }
-        if(!post.getComentario().isEmpty()) {
+
+        if (post.getComentario() != null && !post.getComentario().isEmpty()) {
             reseña.setComentario(post.getComentario());
         }
+
+        // Guardar los cambios
         reseñaRepository.save(reseña);
     }
-
-
 
     private ResponseReseñadto converToDto(Reseña reseña){
         ResponseReseñadto responseReseñadto = new ResponseReseñadto();
@@ -111,6 +137,7 @@ public class ReseñaService {
         responseReseñadto.setComentario(reseña.getComentario());
         responseReseñadto.setId(reseña.getId());
         responseReseñadto.setUsuarioId(reseña.getUsuarioId());
+        responseReseñadto.setProductoId(reseña.getProducto().getId());
         return responseReseñadto;
     }
 
