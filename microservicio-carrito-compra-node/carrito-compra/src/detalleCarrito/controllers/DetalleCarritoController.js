@@ -1,0 +1,76 @@
+const CarritoService = require('../services/CarritoService');
+const mongoose = require('mongoose');
+
+class DetalleCarritoController{
+    async crearDetalleCarrito(req, res){
+        try{
+            const detalleCarrito = await CarritoService.crearDetalleCarrito(req.body);
+            res.status(201).json(detalleCarrito);
+        }
+        catch(err){
+            res.status(400).json({message: err.message});
+            console.error(err);
+        }
+    }
+    async agregarProducto(req, res){
+        try{
+            const {id} = req.params;
+            const producto = req.body;
+            const detalleCarrito = await CarritoService.agregarProducto(id, producto);
+            res.status(200).json(detalleCarrito);
+        }catch{
+            res.status(400).json({message: error.message});
+        }
+    }
+    async obtenerTodosLosDetallesCarrito(req,res){
+        try{
+            const detallesCarrito = await CarritoService.obtenerTodosLosDetallesCarrito();
+            res.status(200).json(detallesCarrito);
+        }catch(error){
+            res.status(400).json({message: error.message});
+        }
+    }
+    async obtenerDetalleCarritoPorId(req,res){
+        try{
+            const {id} = req.params;
+            const detalleCarrito = await CarritoService.obtenerDetalleCarritoPorId(id);
+            res.status(200).json(detalleCarrito);
+        }catch(error){
+            res.status(400).json({message: error.message});
+        }
+    }
+
+    async eliminarProducto(req,res){
+        try{
+            const {id} = req.params;
+            const {productoid} = req.params;
+            const detalleCarrito = await CarritoService.eliminarProducto(id, productoid);
+            res.status(200).json(detalleCarrito);
+        }catch(error){
+            res.status(400).json({message: error.message});
+        }
+    }
+    async eliminarDetalleCarrito(req,res){
+        try{
+            const {id} = req.params;
+            await CarritoService.eliminarDetalleCarrito(id);
+            res.status(204).end();
+        }catch(error){
+            res.status(400).json({message: error.message});
+        }
+    }
+
+    async editarCantidadProducto(req,res){
+        try{
+            const {id} = req.params;
+            const {productoid} = req.params;
+            const {cantidad} = req.body;
+            const detalleCarrito = await CarritoService.editarCantidadProducto(id, productoid, cantidad);
+            res.status(200).json(detalleCarrito);
+        }catch(error){
+            res.status(400).json({message: error.message});
+        }
+    }
+
+}
+module.exports = new DetalleCarritoController();

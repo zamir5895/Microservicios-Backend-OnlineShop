@@ -15,6 +15,15 @@ app.put('/api/carrito/pagado/:id', CarritoController.modificarCarritoPagado);
 app.delete('/api/carrito/:id', CarritoController.eliminarCarrito);
 app.put('/api/carrito/detalles/:id', CarritoController.editarDetalleCarrito);
 
+//Definir rutas de detalle carrito
+app.post('/api/detalleCarrito/postear', DetalleCarritoController.crearDetalleCarrito);
+app.put('/api/detalleCarrito/agregarProducto/:id', DetalleCarritoController.agregarProducto);
+app.get('/api/detalleCarrito/all', DetalleCarritoController.obtenerTodosLosDetallesCarrito);
+app.get('/api/detalleCarrito/:id', DetalleCarritoController.obtenerDetalleCarritoPorId);
+app.delete('/api/detalleCarrito/:id', DetalleCarritoController.eliminarDetalleCarrito);
+app.delete('/api/detalleCarrito/:id/:productoid', DetalleCarritoController.eliminarProducto);
+app.put('/api/detalleCarrito/:id', DetalleCarritoController.editarDetalleCarrito);
+
 // Conexión a MongoDB sin opciones deprecadas
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {

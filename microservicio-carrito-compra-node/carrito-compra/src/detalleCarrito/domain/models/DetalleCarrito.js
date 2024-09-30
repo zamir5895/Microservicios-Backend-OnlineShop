@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const ProductoSchema = new mongoose.Schema({
-    producto_id: { type: String, required: true },
+    producto_id: { type: Number, required: true },
     cantidad: { type: Number, required: true, min: 1 },
     precioUnitario: { type: Number, required: true }
 });
