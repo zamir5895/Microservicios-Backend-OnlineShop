@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 
@@ -29,7 +30,7 @@ public class ProductoService {
     @Autowired
     private ProductoRepository productoRepository;
 
-    public void postearProducto(ProductoRequestDto producto) {
+    public ProductoResponseDTO postearProducto(ProductoRequestDto producto) {
         Producto producto1 = new Producto();
         Categoria categoria = categoriaRepository.findById(producto.getCategoriaId()).
                 orElseThrow(()->new EntityNotFoundException("Categoria no encontrada"));
@@ -43,6 +44,7 @@ public class ProductoService {
         categoria.getProductos().add(producto1);
         categoria.setTotalProductos(categoria.getTotalProductos() + 1);
         categoriaRepository.save(categoria);
+        return convertoDto(producto1);
     }
 
     public ProductoResponseDTO getProducto(Integer id){
@@ -79,13 +81,19 @@ public class ProductoService {
         }
         if(productoRequestDto.getStock() != null){
             producto.setStock(producto.getStock() - productoRequestDto.getStock());
+            if(producto.getStock() == 0){
+                producto.getCategoria().setTotalProductos(producto.getCategoria().getTotalProductos() - 1);
+            }
         }
 
         productoRepository.save(producto);
     }
 
-    public void eliminarProducto(int id){
+    public void eliminarProducto(Integer id){
         Producto producto = productoRepository.findById(id).orElseThrow(()->new EntityNotFoundException("Producto no encontrado"));
+        producto.getCategoria().getProductos().remove(producto);
+        producto.getCategoria().setTotalProductos(producto.getCategoria().getTotalProductos() - 1);
+        categoriaRepository.save(producto.getCategoria());
         productoRepository.delete(producto);
     }
     public void actualizarStock(int id, int cantidad){
@@ -96,6 +104,9 @@ public class ProductoService {
     public void reducirStock(int id, int cantidad){
         Producto producto = productoRepository.findById(id).orElseThrow(()->new EntityNotFoundException("Producto no encontrado"));
         producto.setStock(producto.getStock() - cantidad);
+        if(producto.getStock() == 0){
+            producto.getCategoria().setTotalProductos(producto.getCategoria().getTotalProductos() - 1);
+        }
         productoRepository.save(producto);
     }
 
@@ -108,6 +119,7 @@ public class ProductoService {
     }
     public Page<ProductoResponseDTO> obtenerProductosPorNombre(String nombre, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
+        nombre =nombre.toLowerCase(Locale.ROOT);
         Page<Producto> productos = productoRepository.findByNombreContainingIgnoreCase(nombre, pageable);
         List<ProductoResponseDTO> productosresponse = productos.getContent().stream()
                 .map(this::convertoDto).collect(Collectors.toList());

@@ -10,6 +10,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Locale;
+
 @NoArgsConstructor
 @Service
 public class CategoriaService {
@@ -62,6 +64,7 @@ public class CategoriaService {
     }
     public Page<ResponseCategoriaDto> obtenerCategoriasPorNombre(String nombre, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
+        nombre = nombre.toLowerCase(Locale.ROOT);
         Page<Categoria> categorias = categoriaRepository.findByNombreContainingIgnoreCase(nombre, pageable);
         return categorias.map(categoria -> {
             ResponseCategoriaDto responseCategoriaDto = new ResponseCategoriaDto();

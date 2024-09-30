@@ -5,6 +5,7 @@ import com.example.microserviciosproductojava.Reseña.Domain.Reseña;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -21,8 +22,8 @@ public class Producto {
     @ManyToOne
     @JoinColumn(name = "categoria_id")
     private Categoria categoria;
-    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL)
-    private List<Reseña> reseñas;
+    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Reseña> reseñas = new ArrayList<>();
 
 
 

@@ -18,9 +18,8 @@ public class ProductoController {
     private ProductoService productoService;
 
     @PostMapping("/postear")
-    public ResponseEntity<Void> postearProducto(@RequestBody ProductoRequestDto productoRequestDto) {
-        productoService.postearProducto(productoRequestDto);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<ProductoResponseDTO> postearProducto(@RequestBody ProductoRequestDto productoRequestDto) {
+        return ResponseEntity.ok(productoService.postearProducto(productoRequestDto));
     }
     @GetMapping("/{id}")
     public ResponseEntity<ProductoResponseDTO> getProducto(@PathVariable Integer id) {

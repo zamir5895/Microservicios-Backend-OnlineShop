@@ -26,18 +26,34 @@ public class ReseñaService {
     @Autowired
     private ProductoRepository productoRepository;
 
-    public void crearReseña(PostReseñadto post){
+    public void crearReseña(PostReseñadto post) {
+        // Buscar el producto por ID
+        Producto producto = productoRepository.findById(post.getProductoId())
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+
+        System.out.println("Producto encontrado: " + producto.getNombre());
         Reseña reseña = new Reseña();
-        Producto producto = productoRepository.findById(post.getProductoId()).orElseThrow(()-> new RuntimeException("Producto no encontrado"));
         reseña.setCalificacion(post.getCalificacion());
         reseña.setComentario(post.getComentario());
         reseña.setUsuarioId(post.getUsuarioId());
+        System.out.println("error peud");
+        // Asignar el producto a la reseña
         reseña.setProducto(producto);
+        System.out.println("eeror");
+        // Guardar la reseña
         reseñaRepository.save(reseña);
+        System.out.println("aqui");
+        // Actualizar el producto con la nueva reseña
         producto.getReseñas().add(reseña);
-        producto.setCantidadReseñas(producto.getCantidadReseñas() + 1);
+        if (producto.getCantidadReseñas() == null) {
+            producto.setCantidadReseñas(1);
+        } else {
+            producto.setCantidadReseñas(producto.getCantidadReseñas() + 1);
+        }
         productoRepository.save(producto);
     }
+
+
     public Page<ResponseReseñadto> ObtenerReseñasPorProducto(Integer productoId, int page, int size){
         Pageable pageable = PageRequest.of(page, size);
         Page<Reseña> reseñas = reseñaRepository.findAllByProductoId(productoId, pageable);

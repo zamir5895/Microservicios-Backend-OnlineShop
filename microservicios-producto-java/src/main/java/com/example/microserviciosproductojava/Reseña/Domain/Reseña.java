@@ -13,7 +13,7 @@ public class Reseña {
     private String comentario;
     private Integer calificacion;
     private int usuarioId;
-    @ManyToOne
-    @JoinColumn(name = "producto_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "producto_id", nullable = false)
     private Producto producto;
 }
