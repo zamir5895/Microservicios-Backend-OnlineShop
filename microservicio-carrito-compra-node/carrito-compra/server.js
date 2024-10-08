@@ -1,7 +1,14 @@
 const express = require('express');
 const cors = require('cors');
 const app = express();
-app.use(cors());
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+
+const corsOptions = {
+  origin: "*",
+  methods: "GET,POST,PUT,DELETE",
+};
+app.use(cors(corsOptions));
+
 const mongoose = require('mongoose');
 
 app.use(express.json());
@@ -44,8 +51,6 @@ app.delete('/api/detalleCarrito/:id/:productoid', DetalleCarritoController.elimi
 app.put('/api/detalleCarrito/:id/:productoid', DetalleCarritoController.editarCantidadProducto);
 app.get('/api/detalleCarrito/:id/:productoid', DetalleCarritoController.obtenerProductoByDetalleCarritoIdAndProductoId);
 
-// Swagger documentation
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // Conexión a MongoDB
 mongoose.connect('mongodb://98.83.127.213:27017/compras')
