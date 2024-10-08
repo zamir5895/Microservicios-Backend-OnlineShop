@@ -1,15 +1,8 @@
-require('dotenv').config();
 const express = require('express');
-const mongoose = require('mongoose');
 const cors = require('cors');
 const app = express();
-
-const corsOptions = {
-  origin: "*",
-  methods: "GET,POST,PUT,DELETE",
-};
-app.use(cors(corsOptions));
-
+app.use(cors());
+const mongoose = require('mongoose');
 
 app.use(express.json());
 
