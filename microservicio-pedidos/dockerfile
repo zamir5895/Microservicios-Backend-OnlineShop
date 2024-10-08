@@ -1,7 +1,5 @@
-    # Usar una imagen base de Python
     FROM python:3.11-slim
 
-    # Instalar dependencias necesarias para mysqlclient
     RUN apt-get update && apt-get install -y \
         default-libmysqlclient-dev \
         build-essential \
@@ -10,18 +8,13 @@
         libssl-dev \
         && rm -rf /var/lib/apt/lists/*
 
-    # Definir directorio de trabajo
     WORKDIR /app
 
-    # Copiar el archivo de requerimientos y luego instalarlos
     COPY requirements.txt .
     RUN pip install --no-cache-dir -r requirements.txt
 
-    # Copiar el código de la aplicación
     COPY . .
 
-    # Exponer el puerto de Django
     EXPOSE 8000
 
-    # Comando de inicio con migraciones y recolección de estáticos
     CMD ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]

@@ -26,10 +26,7 @@ SECRET_KEY = 'django-insecure-5zpr)q*4)_8&i_ntdur_y$@4r$e&_e$dr2#7^pw)^r6pd5hz*b
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    'localhost',
-    '127.0.0.1',
-]
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -43,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     "rest_framework",
     'drf_yasg',
+    'corsheaders', 
     "apiPedidos.Usuario",
     "apiPedidos.Pedido",  
     "apiPedidos.DireccionEnvio",
@@ -57,6 +55,7 @@ REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',  # Esquema automático para la documentación
 }
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware', 
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -67,6 +66,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'pedidos.urls'
+CORS_ALLOW_ALL_ORIGINS = True
 
 TEMPLATES = [
     {
