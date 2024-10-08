@@ -1,21 +1,19 @@
 const express = require('express');
 const cors = require('cors');
 const app = express();
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 const corsOptions = {
   origin: "*",
   methods: "GET,POST,PUT,DELETE",
 };
-app.use(cors(corsOptions));
-
-const mongoose = require('mongoose');
+app.use(cors(corsOptions));const mongoose = require('mongoose');
 
 app.use(express.json());
 
 const CarritoController = require('./src/carrito/controllers/CarritoController');
 const DetalleCarritoController = require('./src/detalleCarrito/controllers/DetalleCarritoController');
 const { swaggerUi, swaggerDocs } = require('./swagger');
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // Rutas de prueba
 app.get('/', (req, res) => {
