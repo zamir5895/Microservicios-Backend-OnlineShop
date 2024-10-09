@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @NoArgsConstructor
 @RestController
+@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
 @RequestMapping("/api/producto")
 public class ProductoController {
     @Autowired
